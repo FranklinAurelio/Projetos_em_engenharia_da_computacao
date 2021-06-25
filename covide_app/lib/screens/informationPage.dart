@@ -1,6 +1,8 @@
 import 'package:covide_app/screens/homepage.dart';
 import 'package:covide_app/widgets/popUpInfos.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
 
 class Information extends StatefulWidget {
   @override
@@ -8,6 +10,32 @@ class Information extends StatefulWidget {
 }
 
 class _InformationState extends State<Information> {
+  Widget buidRanking() {
+    return Table(
+      defaultColumnWidth: FixedColumnWidth(150.0),
+      border: TableBorder(
+        horizontalInside: BorderSide(
+          color: Colors.transparent,
+          style: BorderStyle.solid,
+          width: 1.0,
+        ),
+        verticalInside: BorderSide(
+          color: Colors.white,
+          style: BorderStyle.solid,
+          width: 1.0,
+        ),
+      ),
+      children: [
+        criarTituloTable("Municipio,1ª Dose,2ª Dose"),
+        criarLinhaTable("SERRANA, 34185,31549 "),
+        criarLinhaTable("FLORA RICA, 914,459 "),
+        criarLinhaTable("ARCO-ÍRIS, 1046,548 "),
+        criarLinhaTable("TURMALINA, 1143,480"),
+        criarLinhaTable("A.SÃO PEDRO, 2131 ,979"),
+      ],
+    );
+  }
+
   Widget buidTables() {
     return Table(
       defaultColumnWidth: FixedColumnWidth(150.0),
@@ -69,12 +97,21 @@ class _InformationState extends State<Information> {
           alignment: Alignment.center,
           child: Text(
             name,
-            style: TextStyle(fontSize: 20.0),
+            style: TextStyle(fontSize: 16.0),
           ),
           padding: EdgeInsets.all(8.0),
         );
       }).toList(),
     );
+  }
+
+  void openURL() async {
+    const url = 'https://fluxovacinacaocovid.web.app/todos';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      /// Não è possível abrir a URL
+    }
   }
 
   @override
@@ -100,6 +137,7 @@ class _InformationState extends State<Information> {
         ),
       ),
       body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: Center(
           child: Container(
             height: MediaQuery.of(context).size.height * 0.95,
@@ -134,6 +172,72 @@ class _InformationState extends State<Information> {
                     child: Container(
                   child: buidTables(),
                 )),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  child: Card(
+                    color: Colors.green[400],
+                    child: Image.asset(
+                      'assets/wbjq1ogv.png',
+                      width: MediaQuery.of(context).size.width * 1.0,
+                      height: 200.0,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Center(
+                  child: Text(
+                    'Ranking dos municípios',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Center(
+                    child: Container(
+                  child: buidRanking(),
+                )),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width * 0.34,
+                  child: GestureDetector(
+                    onTap: openURL,
+                    child: Card(
+                      color: Colors.red,
+                      elevation: 3,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            'ver mais',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.white,
+                            size: 20,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
