@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       elevation: 3,
                       child: Center(
                         child: Text(
-                          'IA',
+                          'Buscar ponto de vacinação',
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

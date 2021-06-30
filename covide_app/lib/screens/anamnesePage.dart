@@ -11,7 +11,16 @@ class Anamnese extends StatefulWidget {
 }
 
 class _AnamneseState extends State<Anamnese> {
+  //bool isSwitched = false;
   ScrollController _controllerOne = ScrollController();
+  final List<bool> isSwitched = <bool>[];
+  int pontos = 0;
+
+  void addListSwitch() {
+    for (var i = 0; i < 24; i++) {
+      this.isSwitched.add(false);
+    }
+  }
 
   Widget listview() {
     return Scrollbar(
@@ -21,7 +30,31 @@ class _AnamneseState extends State<Anamnese> {
         controller: _controllerOne,
         itemCount: projects.length,
         itemBuilder: (BuildContext context, int index) {
-          return AnamneseWidget(projects[index]);
+          return Card(
+              color: Colors.green[100],
+              child: Column(
+                children: [
+                  AnamneseWidget(
+                    projects[index],
+                  ),
+                  Switch(
+                    value: projects[index].answer,
+                    onChanged: (value) {
+                      setState(() {
+                        projects[index].answer = value;
+                        if (projects[index].answer == true) {
+                          pontos = pontos + projects[index].valor;
+                        } else {
+                          pontos = pontos - projects[index].valor;
+                        }
+                        print(pontos);
+                      });
+                    },
+                    activeTrackColor: Colors.cyan,
+                    activeColor: Colors.teal[700],
+                  )
+                ],
+              ));
         },
       ),
     );
@@ -100,13 +133,37 @@ class _AnamneseState extends State<Anamnese> {
                   SizedBox(
                     width: 30,
                   ),
-                  Container(
-                    height: 70,
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: Card(
-                      color: Colors.white,
-                    ),
-                  ),
+                  this.pontos < 4
+                      ? Container(
+                          height: 70,
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: Card(
+                              color: Colors.white,
+                              child: Center(
+                                child: Text(
+                                  this.pontos.toString(),
+                                  style: TextStyle(
+                                      fontSize: 40,
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )),
+                        )
+                      : Container(
+                          height: 70,
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: Card(
+                              color: Colors.white,
+                              child: Center(
+                                child: Text(
+                                  this.pontos.toString(),
+                                  style: TextStyle(
+                                      fontSize: 40,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )),
+                        )
                 ],
               ),
             ),
