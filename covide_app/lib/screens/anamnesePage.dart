@@ -168,6 +168,114 @@ class _AnamneseState extends State<Anamnese> {
               ),
             ),
             SizedBox(
+              height: 10,
+            ),
+            this.pontos < 4
+                ? Container(
+                    height: 40,
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    child: GestureDetector(
+                      onTap: () async {
+                        await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'IMPORTANTE',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red),
+                                ),
+                                content: Text(
+                                    'Indicamos que você espere em casa até que os sintômas amenizem, caso persistam procure o médico imediatamente,' +
+                                        ' mas vale ressaltar que esse diagnostico prévio não substitui um diagnostico médico',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    )),
+                                actions: [
+                                  FlatButton(
+                                    color: Colors.green[400],
+                                    child: Text(
+                                      "OK",
+                                      style: TextStyle(fontSize: 14.0),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  )
+                                ],
+                              );
+                            });
+                      },
+                      child: Card(
+                        color: Colors.teal[800],
+                        elevation: 3,
+                        child: Center(
+                          child: Text(
+                            'Finalizar',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ))
+                : Container(
+                    height: 40,
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    child: GestureDetector(
+                      onTap: () async {
+                        await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'IMPORTANTE',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red),
+                                ),
+                                content: Text(
+                                    'Indicamos que você procure a unidade médica mais próxima,' +
+                                        ' mas vale ressaltar que esse diagnostico prévio não substitui um diagnostico médico',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    )),
+                                actions: [
+                                  FlatButton(
+                                    color: Colors.green[400],
+                                    child: Text(
+                                      "OK",
+                                      style: TextStyle(fontSize: 14.0),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  )
+                                ],
+                              );
+                            });
+                      },
+                      child: Card(
+                        color: Colors.teal[800],
+                        elevation: 3,
+                        child: Center(
+                          child: Text(
+                            'Finalizar',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+            SizedBox(
               height: 20,
             ),
             Container(
