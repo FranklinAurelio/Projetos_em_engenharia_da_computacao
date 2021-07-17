@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'anamnese.dart';
 
-//listar meus projetos e subir imagem  e descricao no git
+//listar as questoes da anamnese
 final List<Project> projects = [
   Project(question: 'Você é diabético?', answer: false, valor: 0),
   Project(

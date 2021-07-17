@@ -1,6 +1,7 @@
 import 'package:covide_app/screens/IApage.dart';
 import 'package:covide_app/screens/anamnesePage.dart';
 import 'package:covide_app/screens/informationPage.dart';
+import 'package:covide_app/widgets/popUpDocs.dart';
 import 'package:covide_app/widgets/popUpInfos.dart';
 import 'package:flutter/material.dart';
 
@@ -106,11 +107,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: 80,
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => IA()),
                           (route) => false);
+                      await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return PopUpDocs();
+                          });
                     },
                     child: Card(
                       color: Colors.green[400],
