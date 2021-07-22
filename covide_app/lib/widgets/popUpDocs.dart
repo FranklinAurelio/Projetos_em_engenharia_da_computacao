@@ -1,5 +1,5 @@
+import 'package:covide_app/screens/docPage.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 
 class PopUpDocs extends StatefulWidget {
@@ -26,11 +26,53 @@ class _PopUpDocsState extends State<PopUpDocs> {
         height: MediaQuery.of(context).size.height * 0.4,
         child: Container(
           child: Center(
-            child: Text(
-              "Não esqueça de levar documento oficial com foto que contenha cpf e comprovante de residência no nome do vacinado",
-              style: TextStyle(fontSize: fontBody),
-            ),
-          ),
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Não esqueça de levar documento oficial com foto que contenha cpf e comprovante de residência no nome do vacinado.",
+                style: TextStyle(fontSize: fontBody),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Text(
+                "Você se enquadra em algum grupo de vacinação?",
+                style:
+                    TextStyle(fontSize: fontBody, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                "Veja aqui os documentos para seu grupo.",
+                style:
+                    TextStyle(fontSize: fontBody, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => Document()),
+                      (route) => false);
+                },
+                child: Card(
+                  color: Colors.yellow[800],
+                  elevation: 3,
+                  child: Center(
+                    child: Icon(
+                      Icons.file_copy_outlined,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )),
         ),
       ),
       actions: [
