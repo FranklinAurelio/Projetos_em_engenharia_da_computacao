@@ -34,9 +34,9 @@ class _PopUpInfoState extends State<PopUpInfo> {
         child: Column(
           children: [
             Text(
-              'Aplicativo desenvolvido para a matéria de Projetos em engenharia da computação' +
+              'Aplicativo desenvolvido para a matéria de Projetos em engenharia da computação e IA' +
                   ' da UNIFESP(Universidade Federal de São Paulo)' +
-                  ', como critério para aprovação na disciplina.' +
+                  ', como critério para aprovação nas disciplinas.' +
                   ' O software tem como objetivo informar, conscientizar e previnir a população a cerca do COVID-19' +
                   'através de informações de fontes confiaves e anamnése com os sintomas mais comuns da doença.',
               style: TextStyle(
