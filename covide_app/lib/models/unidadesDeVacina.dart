@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 //Depois vou adicionando as outras
 
 //DADOS PEGOS DO SITE DA PREFEITURA DE SJC
-final List<Dados> projects = [
+final List<Dados> ubs = [
 //casas do idoso
   Dados(
       name: "Casa do idoso centro",
