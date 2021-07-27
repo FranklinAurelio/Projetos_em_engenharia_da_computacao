@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'dart:convert';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'dart:math' show cos, sqrt, asin;
 
 class IA extends StatefulWidget {
   @override
@@ -24,11 +26,20 @@ class IA extends StatefulWidget {
 class _IAState extends State<IA> {
   final double zoom = 16.0;
 
+  double totalDistance = 0.0;
+
+  late PolylinePoints polylinePoints;
+
+  List<LatLng> polylineCoordinates = [];
+
+  Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
+
   final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(ubs[0].localization[0], ubs[0].localization[1]),
     zoom: 15.0,
   );
 
+  //Set<Marker> markers = {};
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   int _markerIdCounter = 0;
   Completer<GoogleMapController> _mapController = Completer();
@@ -43,13 +54,25 @@ class _IAState extends State<IA> {
     _mapController.complete(controller);
     if (LatLng(ubs[0].localization[0], ubs[0].localization[1]) != null) {
       MarkerId markerId = MarkerId(_markerIdVal());
+      Position positionUser = await Geolocator.getCurrentPosition();
+      ;
       LatLng position = LatLng(ubs[0].localization[0], ubs[0].localization[1]);
       Marker marker = Marker(
         markerId: markerId,
         position: position,
         draggable: false,
       );
-      setState(() {
+      Marker markerUser = Marker(
+        markerId: markerId,
+        position: LatLng(positionUser.latitude, positionUser.longitude),
+        draggable: false,
+      );
+
+      //markers.add(marker);
+      //markers.add(markerUser);
+      setState(() async {
+        _distance(positionUser, position);
+        _createPolylines(positionUser, position);
         _markers[markerId] = marker;
       });
       Future.delayed(Duration(seconds: 1), () async {
@@ -57,7 +80,7 @@ class _IAState extends State<IA> {
         controller.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
-              target: position,
+              target: LatLng(positionUser.latitude, positionUser.longitude),
               zoom: zoom,
             ),
           ),
@@ -66,10 +89,42 @@ class _IAState extends State<IA> {
     }
   }
 
+  //criação da rota
+  _createPolylines(Position origem, LatLng dest) async {
+    polylinePoints = PolylinePoints();
+
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      'YOUR API KEI',
+      PointLatLng(origem.latitude, origem.longitude),
+      PointLatLng(dest.latitude, dest.longitude),
+      travelMode: TravelMode.transit,
+    );
+
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+
+    PolylineId id = PolylineId('poly');
+
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.red,
+      points: polylineCoordinates,
+      width: 3,
+    );
+    setState(() {
+      polylines[id] = polyline;
+    });
+  }
+
   Widget mapView() {
     return GoogleMap(
+      polylines: Set<Polyline>.of(polylines.values),
       mapType: MapType.normal,
       initialCameraPosition: _kGooglePlex,
+      myLocationButtonEnabled: true,
       onMapCreated: _onMapCreated,
       markers: Set<Marker>.of(_markers.values),
       myLocationEnabled: true,
@@ -86,6 +141,40 @@ class _IAState extends State<IA> {
         }
       },
     );
+  }
+
+  //calcular distancia
+  _distance(Position origem, LatLng dest) async {
+    double distanceInMeters = await Geolocator.distanceBetween(
+      origem.latitude,
+      origem.longitude,
+      dest.latitude,
+      dest.longitude,
+    );
+    var lat1 = origem.latitude;
+    var lon1 = origem.longitude;
+    var lat2 = dest.latitude;
+    var lon2 = dest.longitude;
+    double _coordinateDistance(lat1, lon1, lat2, lon2) {
+      var p = 0.017453292519943295;
+      var c = cos;
+      var a = 0.5 -
+          c((lat2 - lat1) * p) / 2 +
+          c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+      return 12742 * asin(sqrt(a));
+    }
+
+    /*for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+      totalDistance += _coordinateDistance(
+        polylineCoordinates[i].latitude,
+        polylineCoordinates[i].longitude,
+        polylineCoordinates[i + 1].latitude,
+        polylineCoordinates[i + 1].longitude,
+      );
+    }*/
+    setState(() {
+      totalDistance = distanceInMeters / 1000;
+    });
   }
 
   @override
@@ -118,7 +207,7 @@ class _IAState extends State<IA> {
               ),
               Container(
                 //color: Colors.white,
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height * 0.6 + 60,
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: mapView(),
               ),
@@ -127,7 +216,7 @@ class _IAState extends State<IA> {
               ),
               Container(
                 //color: Colors.white,
-                height: 150,
+                height: 110,
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: Card(
                   color: Colors.green[400],
@@ -156,6 +245,16 @@ class _IAState extends State<IA> {
                       ),
                       Text(
                         "aberta " + ubs[0].espediente,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        totalDistance.toStringAsFixed(2) + "Km",
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
