@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => Information()),
-                          (route) => false);
+                          (route) => true);
                     },
                     child: Card(
                       color: Colors.green[400],
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => Anamnese()),
-                          (route) => false);
+                          (route) => true);
                     },
                     child: Card(
                       color: Colors.green[400],
@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => IA()),
-                          (route) => false);
+                          (route) => true);
                       await showDialog(
                           context: context,
                           builder: (BuildContext context) {

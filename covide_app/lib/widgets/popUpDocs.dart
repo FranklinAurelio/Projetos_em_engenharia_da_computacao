@@ -57,7 +57,7 @@ class _PopUpDocsState extends State<PopUpDocs> {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => Document()),
-                      (route) => false);
+                      (route) => true);
                 },
                 child: Card(
                   color: Colors.yellow[800],

@@ -24,6 +24,28 @@ class IA extends StatefulWidget {
 }
 
 class _IAState extends State<IA> {
+  @override
+  initState() async {
+    Position positionUser = await Geolocator.getCurrentPosition();
+    for (var i = 0; i < ubs.length; i++) {
+      LatLng position = LatLng(ubs[i].localization[0], ubs[i].localization[1]);
+      await _distance(positionUser, position);
+      setState(() {
+        ubs[i].distance = totalDistance;
+      });
+    }
+    ubs.sort((a, b) => a.distance.compareTo(b.distance));
+    loadDistancias = true;
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+  }
+
+  bool loadDistancias = false;
+
   final double zoom = 16.0;
 
   double totalDistance = 0.0;
@@ -55,7 +77,7 @@ class _IAState extends State<IA> {
     if (LatLng(ubs[0].localization[0], ubs[0].localization[1]) != null) {
       MarkerId markerId = MarkerId(_markerIdVal());
       Position positionUser = await Geolocator.getCurrentPosition();
-      ;
+
       LatLng position = LatLng(ubs[0].localization[0], ubs[0].localization[1]);
       Marker marker = Marker(
         markerId: markerId,
@@ -71,7 +93,7 @@ class _IAState extends State<IA> {
       //markers.add(marker);
       //markers.add(markerUser);
       setState(() async {
-        _distance(positionUser, position);
+        //_distance(positionUser, position);
         _createPolylines(positionUser, position);
         _markers[markerId] = marker;
       });
@@ -94,7 +116,7 @@ class _IAState extends State<IA> {
     polylinePoints = PolylinePoints();
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'YOUR API KEI',
+      'YOUR API-KEY',
       PointLatLng(origem.latitude, origem.longitude),
       PointLatLng(dest.latitude, dest.longitude),
       travelMode: TravelMode.transit,
@@ -125,6 +147,7 @@ class _IAState extends State<IA> {
       mapType: MapType.normal,
       initialCameraPosition: _kGooglePlex,
       myLocationButtonEnabled: true,
+      rotateGesturesEnabled: true,
       onMapCreated: _onMapCreated,
       markers: Set<Marker>.of(_markers.values),
       myLocationEnabled: true,
@@ -253,13 +276,40 @@ class _IAState extends State<IA> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(
-                        totalDistance.toStringAsFixed(2) + "Km",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
+                      loadDistancias
+                          ? Text(
+                              ubs[0].distance.toStringAsFixed(2) + "Km",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            )
+
+                          /* Text(
+                              ubs[0].distance.toStringAsFixed(2) +
+                                  " " +
+                                  ubs[0].name +
+                                  " " +
+                                  ubs[1].distance.toStringAsFixed(2) +
+                                  " " +
+                                  ubs[3].name +
+                                  " " +
+                                  ubs[2].distance.toStringAsFixed(2) +
+                                  " " +
+                                  ubs[2].name +
+                                  " ",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            )*/
+                          : Text(
+                              "calculando...",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red),
+                            ),
                     ],
                   ),
                 ),
