@@ -35,6 +35,7 @@ class _IAState extends State<IA> {
       });
     }
     ubs.sort((a, b) => a.distance.compareTo(b.distance));
+    _chooseBest();
     loadDistancias = true;
     super.initState();
   }
@@ -43,6 +44,12 @@ class _IAState extends State<IA> {
   dispose() {
     super.dispose();
   }
+
+  late LatLng ubsLocation;
+  late String ubsName;
+  late String ubsCep;
+  late String ubsHorario;
+  late double ubsDistance;
 
   bool loadDistancias = false;
 
@@ -78,10 +85,11 @@ class _IAState extends State<IA> {
       MarkerId markerId = MarkerId(_markerIdVal());
       Position positionUser = await Geolocator.getCurrentPosition();
 
-      LatLng position = LatLng(ubs[0].localization[0], ubs[0].localization[1]);
+      //LatLng position = LatLng(ubs[0].localization[0], ubs[0].localization[1]);
+
       Marker marker = Marker(
         markerId: markerId,
-        position: position,
+        position: ubsLocation,
         draggable: false,
       );
       Marker markerUser = Marker(
@@ -94,7 +102,7 @@ class _IAState extends State<IA> {
       //markers.add(markerUser);
       setState(() async {
         //_distance(positionUser, position);
-        _createPolylines(positionUser, position);
+        _createPolylines(positionUser, ubsLocation);
         _markers[markerId] = marker;
       });
       Future.delayed(Duration(seconds: 1), () async {
@@ -200,6 +208,82 @@ class _IAState extends State<IA> {
     });
   }
 
+  _chooseBest() {
+    if (ubs[0].qtdOfDose >= ubs[1].qtdOfDose) {
+      if (ubs[0].qtdOfDose >= ubs[2].qtdOfDose) {
+        setState(() {
+          ubsLocation = LatLng(ubs[0].localization[0], ubs[0].localization[1]);
+          ubsName = ubs[0].name;
+          ubsCep = ubs[0].cep;
+          ubsHorario = ubs[0].espediente;
+          ubsDistance = ubs[0].distance;
+        });
+      } else {
+        setState(() {
+          ubsLocation = LatLng(ubs[2].localization[0], ubs[2].localization[1]);
+          ubsName = ubs[2].name;
+          ubsCep = ubs[2].cep;
+          ubsHorario = ubs[2].espediente;
+          ubsDistance = ubs[2].distance;
+        });
+      }
+    } else if (ubs[1].qtdOfDose >= ubs[0].qtdOfDose) {
+      if (ubs[1].qtdOfDose >= ubs[2].qtdOfDose) {
+        setState(() {
+          ubsLocation = LatLng(ubs[1].localization[0], ubs[1].localization[1]);
+          ubsName = ubs[1].name;
+          ubsCep = ubs[1].cep;
+          ubsHorario = ubs[1].espediente;
+          ubsDistance = ubs[1].distance;
+        });
+      } else {
+        setState(() {
+          ubsLocation = LatLng(ubs[2].localization[0], ubs[2].localization[1]);
+          ubsName = ubs[2].name;
+          ubsCep = ubs[2].cep;
+          ubsHorario = ubs[2].espediente;
+          ubsDistance = ubs[2].distance;
+        });
+      }
+    } else if (ubs[2].qtdOfDose >= ubs[0].qtdOfDose) {
+      if (ubs[2].qtdOfDose >= ubs[1].qtdOfDose) {
+        setState(() {
+          ubsLocation = LatLng(ubs[2].localization[0], ubs[2].localization[1]);
+          ubsName = ubs[2].name;
+          ubsCep = ubs[2].cep;
+          ubsHorario = ubs[2].espediente;
+          ubsDistance = ubs[2].distance;
+        });
+      } else {
+        setState(() {
+          ubsLocation = LatLng(ubs[1].localization[0], ubs[1].localization[1]);
+          ubsName = ubs[1].name;
+          ubsCep = ubs[1].cep;
+          ubsHorario = ubs[1].espediente;
+          ubsDistance = ubs[1].distance;
+        });
+      }
+    } else if (ubs[2].qtdOfDose >= ubs[1].qtdOfDose) {
+      if (ubs[2].qtdOfDose >= ubs[0].qtdOfDose) {
+        setState(() {
+          ubsLocation = LatLng(ubs[2].localization[0], ubs[2].localization[1]);
+          ubsName = ubs[2].name;
+          ubsCep = ubs[2].cep;
+          ubsHorario = ubs[2].espediente;
+          ubsDistance = ubs[2].distance;
+        });
+      } else {
+        setState(() {
+          ubsLocation = LatLng(ubs[0].localization[0], ubs[0].localization[1]);
+          ubsName = ubs[0].name;
+          ubsCep = ubs[0].cep;
+          ubsHorario = ubs[0].espediente;
+          ubsDistance = ubs[0].distance;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,7 +331,7 @@ class _IAState extends State<IA> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Recomendamos a " + ubs[0].name,
+                        "Recomendamos a " + ubsName,
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -257,7 +341,7 @@ class _IAState extends State<IA> {
                         height: 10,
                       ),
                       Text(
-                        "cep: " + ubs[0].cep,
+                        "cep: " + ubsCep,
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -267,7 +351,7 @@ class _IAState extends State<IA> {
                         height: 10,
                       ),
                       Text(
-                        "aberta " + ubs[0].espediente,
+                        "aberta " + ubsHorario,
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -278,7 +362,7 @@ class _IAState extends State<IA> {
                       ),
                       loadDistancias
                           ? Text(
-                              ubs[0].distance.toStringAsFixed(2) + "Km",
+                              ubsDistance.toStringAsFixed(2) + "Km",
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

@@ -5,7 +5,7 @@ class Dados {
   String name;
   String cep;
   List<double> localization;
-  int qtdOfDose;
+  double qtdOfDose;
   double distance;
   String espediente;
   Dados({
