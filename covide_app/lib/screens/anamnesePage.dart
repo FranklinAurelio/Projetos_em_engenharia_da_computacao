@@ -22,6 +22,15 @@ class _AnamneseState extends State<Anamnese> {
     }
   }
 
+  @override
+  initState() {
+    for (var i = 0; i < projects.length; i++) {
+      projects[i].answer = false;
+    }
+    pontos = 0;
+    super.initState();
+  }
+
   Widget listview() {
     return Scrollbar(
       controller: _controllerOne,

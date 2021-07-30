@@ -10,7 +10,7 @@ class Information extends StatefulWidget {
 }
 
 class _InformationState extends State<Information> {
-  Widget buidRanking() {
+  /*Widget buidRanking() {
     return Table(
       defaultColumnWidth: FixedColumnWidth(150.0),
       border: TableBorder(
@@ -34,9 +34,9 @@ class _InformationState extends State<Information> {
         criarLinhaTable("A.SÃO PEDRO, 2131 ,979"),
       ],
     );
-  }
+  }*/
 
-  Widget buidTables() {
+  /*Widget buidTables() {
     return Table(
       defaultColumnWidth: FixedColumnWidth(150.0),
       border: TableBorder(
@@ -57,9 +57,9 @@ class _InformationState extends State<Information> {
         criarLinhaTable("16.234.138, 5.842.477,12.62 % "),
       ],
     );
-  }
+  }*/
 
-  criarTituloTable(String listaNomes) {
+  /*criarTituloTable(String listaNomes) {
     return TableRow(
       children: listaNomes.split(',').map((name) {
         return Container(
@@ -76,12 +76,12 @@ class _InformationState extends State<Information> {
         );
       }).toList(),
     );
-  }
+  }*/
 
   Widget infos() {
     return Container(
       child: Text(
-        'informação atualizada em 23/06/2021' +
+        'informação atualizada em 29/07/2021' +
             '\n' +
             'Fonte dos dados: https://fluxovacinacaocovid.web.app',
         style: TextStyle(fontSize: 16, color: Colors.blue),
@@ -89,7 +89,7 @@ class _InformationState extends State<Information> {
     );
   }
 
-  criarLinhaTable(String listaNomes) {
+  /*criarLinhaTable(String listaNomes) {
     return TableRow(
       children: listaNomes.split(',').map((name) {
         return Container(
@@ -102,6 +102,109 @@ class _InformationState extends State<Information> {
           padding: EdgeInsets.all(8.0),
         );
       }).toList(),
+    );
+  }*/
+
+  Widget buildDados() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.98,
+      //height: 320,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width * 0.98,
+            child: Card(
+              color: Colors.green[400],
+              child: Text(
+                "DOSE 1",
+                style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Container(
+            height: 30,
+            width: MediaQuery.of(context).size.width * 0.98,
+            child: Card(
+              color: Colors.green[200],
+              child: Text(
+                "25.756.936 doses aplicadas",
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width * 0.98,
+            child: Card(
+              color: Colors.green[400],
+              child: Text(
+                "DOSE 2",
+                style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Container(
+            height: 30,
+            width: MediaQuery.of(context).size.width * 0.98,
+            child: Card(
+              color: Colors.green[200],
+              child: Text(
+                "8.805.389 doses aplicadas",
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width * 0.98,
+            child: Card(
+              color: Colors.green[400],
+              child: Text(
+                "DOSE UNICA",
+                style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Container(
+            height: 30,
+            width: MediaQuery.of(context).size.width * 0.98,
+            child: Card(
+              color: Colors.green[200],
+              child: Text(
+                "1.082.509 doses aplicadas",
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -133,6 +236,15 @@ class _InformationState extends State<Information> {
               color: Colors.white,
               iconSize: 30.0,
             ),
+            SizedBox(
+              width: 20,
+            ),
+            Text('  Informações sobre a vacinação',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                )),
           ],
         ),
       ),
@@ -145,7 +257,7 @@ class _InformationState extends State<Information> {
             color: Colors.green[200],
             child: Column(
               children: [
-                Container(
+                /*Container(
                   height: 60,
                   width: MediaQuery.of(context).size.width * 1.0,
                   child: Card(
@@ -161,16 +273,19 @@ class _InformationState extends State<Information> {
                 ),
                 SizedBox(
                   height: 20,
+                ),*/
+                SizedBox(
+                  height: 10,
                 ),
                 Container(
                   child: infos(),
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 Center(
                     child: Container(
-                  child: buidTables(),
+                  child: buildDados(),
                 )),
                 SizedBox(
                   height: 20,
@@ -181,29 +296,13 @@ class _InformationState extends State<Information> {
                     child: Image.asset(
                       'assets/wbjq1ogv.png',
                       width: MediaQuery.of(context).size.width * 1.0,
-                      height: 200.0,
+                      height: 300.0,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 SizedBox(
                   height: 20,
-                ),
-                Center(
-                  child: Text(
-                    'Ranking dos municípios',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Center(
-                    child: Container(
-                  child: buidRanking(),
-                )),
-                SizedBox(
-                  height: 10,
                 ),
                 Container(
                   height: 40,
