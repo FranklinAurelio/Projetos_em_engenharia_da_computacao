@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:covide_app/main.dart';
+import 'package:covide_app/models/dados.dart';
 import 'package:covide_app/models/unidadesDeVacina.dart';
 import 'package:covide_app/screens/homepage.dart';
 import 'package:covide_app/widgets/mapPage.dart';
@@ -35,7 +36,8 @@ class _IAState extends State<IA> {
       });
     }
     ubs.sort((a, b) => a.distance.compareTo(b.distance));
-    _chooseBest();
+    //_chooseBest();
+    _newRated();
     loadDistancias = true;
     super.initState();
   }
@@ -44,6 +46,8 @@ class _IAState extends State<IA> {
   dispose() {
     super.dispose();
   }
+
+  List<Dados> rated = [];
 
   late LatLng ubsLocation;
   late String ubsName;
@@ -208,7 +212,26 @@ class _IAState extends State<IA> {
     });
   }
 
-  _chooseBest() {
+  _newRated() {
+    for (var i = 0; i < 3; i++) {
+      rated.add(ubs[0]);
+    }
+    //vendo dos mais proximos quais tem mais doses
+    rated.sort((a, b) => a.qtdOfDose.compareTo(b.qtdOfDose));
+    //removendo o que tem menos
+    rated.removeAt(2);
+    // vendo dos que tem mais doses qual o mais proximo
+    rated.sort((a, b) => a.distance.compareTo(b.distance));
+    setState(() {
+      ubsLocation = LatLng(rated[0].localization[0], rated[0].localization[1]);
+      ubsName = rated[0].name;
+      ubsCep = rated[0].cep;
+      ubsHorario = rated[0].espediente;
+      ubsDistance = rated[0].distance;
+    });
+  }
+
+  /*_chooseBest() {
     if (ubs[0].qtdOfDose >= ubs[1].qtdOfDose) {
       if (ubs[0].qtdOfDose >= ubs[2].qtdOfDose) {
         setState(() {
@@ -282,7 +305,7 @@ class _IAState extends State<IA> {
         });
       }
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
