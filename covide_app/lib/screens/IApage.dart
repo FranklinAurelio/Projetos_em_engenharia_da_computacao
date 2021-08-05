@@ -213,6 +213,33 @@ class _IAState extends State<IA> {
     });
   }
 
+  _distanceCar(Position origem, LatLng dest) async {
+    setState(() {
+      totalDistance = 0.0;
+    });
+    var lat1 = origem.latitude;
+    var lon1 = origem.longitude;
+    var lat2 = dest.latitude;
+    var lon2 = dest.longitude;
+    double _coordinateDistance(lat1, lon1, lat2, lon2) {
+      var p = 0.017453292519943295;
+      var c = cos;
+      var a = 0.5 -
+          c((lat2 - lat1) * p) / 2 +
+          c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+      return 12742 * asin(sqrt(a));
+    }
+
+    for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+      totalDistance += _coordinateDistance(
+        polylineCoordinates[i].latitude,
+        polylineCoordinates[i].longitude,
+        polylineCoordinates[i + 1].latitude,
+        polylineCoordinates[i + 1].longitude,
+      );
+    }
+  }
+
   _newRated() {
     for (var i = 0; i < 3; i++) {
       rated.add(ubs[0]);
@@ -431,29 +458,110 @@ class _IAState extends State<IA> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.red),
                             ),
-                      Container(
-                        height: 35,
-                        width: 50,
-                        child: GestureDetector(
-                          onTap: () async {
-                            await showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return PopUpList();
-                                });
-                          },
-                          child: Card(
-                            color: Colors.green[800],
-                            elevation: 3,
-                            child: Center(
-                              child: Icon(
-                                Icons.map_rounded,
-                                color: Colors.white,
-                                size: 30,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 35,
+                            width: 50,
+                            child: GestureDetector(
+                              onTap: () async {
+                                await showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return PopUpList();
+                                    });
+                              },
+                              child: Card(
+                                color: Colors.green[800],
+                                elevation: 3,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.map_rounded,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            height: 35,
+                            width: 50,
+                            child: GestureDetector(
+                              onTap: () async {
+                                Position positionUser =
+                                    await Geolocator.getCurrentPosition();
+                                for (var i = 0; i < ubs.length; i++) {
+                                  LatLng position = LatLng(
+                                      ubs[i].localization[0],
+                                      ubs[i].localization[1]);
+                                  await _distanceCar(positionUser, position);
+                                  setState(() {
+                                    ubs[i].distance = totalDistance;
+                                  });
+                                }
+                                setState(() {
+                                  ubs.sort((a, b) =>
+                                      a.distance.compareTo(b.distance));
+                                  _newRated();
+                                });
+                              },
+                              child: Card(
+                                color: Colors.teal[800],
+                                elevation: 3,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.commute_rounded,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            height: 35,
+                            width: 50,
+                            child: GestureDetector(
+                              onTap: () async {
+                                Position positionUser =
+                                    await Geolocator.getCurrentPosition();
+                                for (var i = 0; i < ubs.length; i++) {
+                                  LatLng position = LatLng(
+                                      ubs[i].localization[0],
+                                      ubs[i].localization[1]);
+                                  await _distance(positionUser, position);
+                                  setState(() {
+                                    ubs[i].distance = totalDistance;
+                                  });
+                                }
+                                setState(() {
+                                  ubs.sort((a, b) =>
+                                      a.distance.compareTo(b.distance));
+                                  _newRated();
+                                });
+                              },
+                              child: Card(
+                                color: Colors.teal[800],
+                                elevation: 3,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.directions_walk_rounded,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

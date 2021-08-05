@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 
+import 'dart:io';
+
+import 'package:webview_flutter/webview_flutter.dart';
+
 class Information extends StatefulWidget {
   @override
   State<Information> createState() => _InformationState();
@@ -77,6 +81,8 @@ class _InformationState extends State<Information> {
       }).toList(),
     );
   }*/
+
+  /*
 
   Widget infos() {
     return Container(
@@ -343,5 +349,52 @@ class _InformationState extends State<Information> {
         ),
       ),
     );
+  }*/
+  void initState() {
+    super.initState();
+    // Enable hybrid composition.
+    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.green[200],
+        appBar: AppBar(
+          backgroundColor: Colors.green[200],
+          leading: Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                      (route) => false);
+                },
+                icon: Icon(Icons.arrow_back_ios_new),
+                color: Colors.white,
+                iconSize: 30.0,
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text('  Informações sobre a vacinação',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  )),
+            ],
+          ),
+        ),
+        body: WebView(
+          initialUrl: 'https://fluxovacinacaocovid.web.app',
+          javascriptMode: JavascriptMode.unrestricted,
+        ));
+  }
+  /*Widget build(BuildContext context) {
+    return WebView(
+      initialUrl: 'https://fluxovacinacaocovid.web.app',
+    );
+  }*/
 }

@@ -23,7 +23,7 @@ class _PopUpDocsState extends State<PopUpDocs> {
       ),
       content: Container(
         width: MediaQuery.of(context).size.width * 0.7,
-        height: MediaQuery.of(context).size.height * 0.4,
+        height: MediaQuery.of(context).size.height * 0.3,
         child: Container(
           child: Center(
               child: Column(
