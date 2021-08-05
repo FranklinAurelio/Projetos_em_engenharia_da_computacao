@@ -133,7 +133,7 @@ class _UbsMapState extends State<UbsMap> {
     polylinePoints = PolylinePoints();
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'AIzaSyCNOqsF-nHHiNarmRb4OdTIuCuYq4kY7Cc',
+      'YOUR_API_KEY',
       PointLatLng(origem.latitude, origem.longitude),
       PointLatLng(dest.latitude, dest.longitude),
       travelMode: TravelMode.transit,
