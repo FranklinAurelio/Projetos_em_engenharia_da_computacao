@@ -6,6 +6,7 @@ import 'package:covide_app/models/unidadesDeVacina.dart';
 import 'package:covide_app/screens/homepage.dart';
 import 'package:covide_app/widgets/mapPage.dart';
 import 'package:covide_app/widgets/popUpInfos.dart';
+import 'package:covide_app/widgets/ubsList.dart';
 import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
@@ -128,7 +129,7 @@ class _IAState extends State<IA> {
     polylinePoints = PolylinePoints();
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'YOUR API-KEY',
+      'YOUR_API_KEY',
       PointLatLng(origem.latitude, origem.longitude),
       PointLatLng(dest.latitude, dest.longitude),
       travelMode: TravelMode.transit,
@@ -210,6 +211,33 @@ class _IAState extends State<IA> {
     setState(() {
       totalDistance = distanceInMeters / 1000;
     });
+  }
+
+  _distanceCar(Position origem, LatLng dest) async {
+    setState(() {
+      totalDistance = 0.0;
+    });
+    var lat1 = origem.latitude;
+    var lon1 = origem.longitude;
+    var lat2 = dest.latitude;
+    var lon2 = dest.longitude;
+    double _coordinateDistance(lat1, lon1, lat2, lon2) {
+      var p = 0.017453292519943295;
+      var c = cos;
+      var a = 0.5 -
+          c((lat2 - lat1) * p) / 2 +
+          c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+      return 12742 * asin(sqrt(a));
+    }
+
+    for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+      totalDistance += _coordinateDistance(
+        polylineCoordinates[i].latitude,
+        polylineCoordinates[i].longitude,
+        polylineCoordinates[i + 1].latitude,
+        polylineCoordinates[i + 1].longitude,
+      );
+    }
   }
 
   _newRated() {
@@ -313,16 +341,29 @@ class _IAState extends State<IA> {
       backgroundColor: Colors.green[200],
       appBar: AppBar(
         backgroundColor: Colors.green[200],
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => MyHomePage()),
-                (route) => false);
-          },
-          icon: Icon(Icons.arrow_back_ios_new),
-          color: Colors.white,
-          iconSize: 30.0,
+        leading: Row(
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                    (route) => false);
+              },
+              icon: Icon(Icons.arrow_back_ios_new),
+              color: Colors.white,
+              iconSize: 30.0,
+            ),
+            SizedBox(
+              width: 20,
+            ),
+            Text('  Recomendador',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                )),
+          ],
         ),
       ),
       body: Center(
@@ -346,7 +387,7 @@ class _IAState extends State<IA> {
               ),
               Container(
                 //color: Colors.white,
-                height: 110,
+                height: 120,
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: Card(
                   color: Colors.green[400],
@@ -361,9 +402,9 @@ class _IAState extends State<IA> {
                             color: Colors.white),
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 6,
                       ),
-                      Text(
+                      /*Text(
                         "cep: " + ubsCep,
                         style: TextStyle(
                             fontSize: 16,
@@ -372,7 +413,7 @@ class _IAState extends State<IA> {
                       ),
                       SizedBox(
                         height: 10,
-                      ),
+                      ),*/
                       Text(
                         "aberta " + ubsHorario,
                         style: TextStyle(
@@ -381,7 +422,7 @@ class _IAState extends State<IA> {
                             color: Colors.white),
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 6,
                       ),
                       loadDistancias
                           ? Text(
@@ -417,6 +458,111 @@ class _IAState extends State<IA> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.red),
                             ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 35,
+                            width: 50,
+                            child: GestureDetector(
+                              onTap: () async {
+                                await showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return PopUpList();
+                                    });
+                              },
+                              child: Card(
+                                color: Colors.green[800],
+                                elevation: 3,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.map_rounded,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            height: 35,
+                            width: 50,
+                            child: GestureDetector(
+                              onTap: () async {
+                                Position positionUser =
+                                    await Geolocator.getCurrentPosition();
+                                for (var i = 0; i < ubs.length; i++) {
+                                  LatLng position = LatLng(
+                                      ubs[i].localization[0],
+                                      ubs[i].localization[1]);
+                                  await _distanceCar(positionUser, position);
+                                  setState(() {
+                                    ubs[i].distance = totalDistance;
+                                  });
+                                }
+                                setState(() {
+                                  ubs.sort((a, b) =>
+                                      a.distance.compareTo(b.distance));
+                                  _newRated();
+                                });
+                              },
+                              child: Card(
+                                color: Colors.teal[800],
+                                elevation: 3,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.commute_rounded,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            height: 35,
+                            width: 50,
+                            child: GestureDetector(
+                              onTap: () async {
+                                Position positionUser =
+                                    await Geolocator.getCurrentPosition();
+                                for (var i = 0; i < ubs.length; i++) {
+                                  LatLng position = LatLng(
+                                      ubs[i].localization[0],
+                                      ubs[i].localization[1]);
+                                  await _distance(positionUser, position);
+                                  setState(() {
+                                    ubs[i].distance = totalDistance;
+                                  });
+                                }
+                                setState(() {
+                                  ubs.sort((a, b) =>
+                                      a.distance.compareTo(b.distance));
+                                  _newRated();
+                                });
+                              },
+                              child: Card(
+                                color: Colors.teal[800],
+                                elevation: 3,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.directions_walk_rounded,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
