@@ -198,7 +198,7 @@ class _AnamneseState extends State<Anamnese> {
                                 ),
                                 content: Text(
                                     'Indicamos que você espere em casa até que os sintômas amenizem, caso persistam procure o médico imediatamente,' +
-                                        ' mas vale ressaltar que esse diagnostico prévio não substitui um diagnostico médico',
+                                        ' mas vale ressaltar que esse diagnóstico prévio não substitui um diagnostico médico',
                                     style: TextStyle(
                                       fontSize: 16,
                                     )),
@@ -250,7 +250,7 @@ class _AnamneseState extends State<Anamnese> {
                                 ),
                                 content: Text(
                                     'Indicamos que você procure a unidade médica mais próxima,' +
-                                        ' mas vale ressaltar que esse diagnostico prévio não substitui um diagnostico médico',
+                                        ' mas vale ressaltar que esse diagnóstico prévio não substitui um diagnostico médico',
                                     style: TextStyle(
                                       fontSize: 16,
                                     )),

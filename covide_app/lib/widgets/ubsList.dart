@@ -1,4 +1,5 @@
 import 'package:covide_app/models/unidadesDeVacina.dart';
+import 'package:covide_app/widgets/mapUbs.dart';
 import 'package:flutter/material.dart';
 import 'package:covide_app/screens/docPage.dart';
 import 'dart:async';
@@ -21,16 +22,31 @@ class _PopUpListState extends State<PopUpList> {
         controller: _controllerTwo,
         itemCount: ubs.length,
         itemBuilder: (BuildContext context, int index) {
-          return Card(
-              color: Colors.green[100],
-              child: Column(
-                children: [
-                  Text(
-                    ubs[index].name,
-                    style: TextStyle(fontSize: 16, color: Colors.black),
-                  ),
-                ],
-              ));
+          return Container(
+            height: 60,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UbsMap(
+                              index: index,
+                            )),
+                    (route) => true);
+              },
+              child: Card(
+                  elevation: 3,
+                  color: Colors.green[100],
+                  child: Column(
+                    children: [
+                      Text(
+                        ubs[index].name,
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ],
+                  )),
+            ),
+          );
         },
       ),
     );
@@ -41,7 +57,7 @@ class _PopUpListState extends State<PopUpList> {
     return AlertDialog(
       backgroundColor: Colors.green[400],
       title: Text(
-        "Escolha a ubs",
+        "Escolha o ponto de vacinação",
         style: TextStyle(
             fontSize: fontTitle,
             fontWeight: FontWeight.bold,
@@ -56,7 +72,7 @@ class _PopUpListState extends State<PopUpList> {
         FlatButton(
           color: Colors.green[800],
           child: Text(
-            "OK",
+            "Cancelar",
             style: TextStyle(fontSize: 18.0, color: Colors.white),
           ),
           onPressed: () {

@@ -20,25 +20,24 @@ import 'dart:convert';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'dart:math' show cos, sqrt, asin;
 
-class IA extends StatefulWidget {
+class UbsMap extends StatefulWidget {
   @override
-  State<IA> createState() => _IAState();
+  late int index;
+  UbsMap({required this.index});
+  State<UbsMap> createState() => _UbsMapState();
 }
 
-class _IAState extends State<IA> {
+class _UbsMapState extends State<UbsMap> {
   @override
   initState() async {
     Position positionUser = await Geolocator.getCurrentPosition();
-    for (var i = 0; i < ubs.length; i++) {
-      LatLng position = LatLng(ubs[i].localization[0], ubs[i].localization[1]);
-      await _distance(positionUser, position);
-      setState(() {
-        ubs[i].distance = totalDistance;
-      });
-    }
-    ubs.sort((a, b) => a.distance.compareTo(b.distance));
-    //_chooseBest();
-    _newRated();
+    LatLng position = LatLng(ubs[this.widget.index].localization[0],
+        ubs[this.widget.index].localization[1]);
+    await _distance(positionUser, position);
+    setState(() {
+      ubs[this.widget.index].distance = totalDistance;
+    });
+
     loadDistancias = true;
     super.initState();
   }
@@ -51,10 +50,10 @@ class _IAState extends State<IA> {
   List<Dados> rated = [];
 
   late LatLng ubsLocation;
-  late String ubsName;
-  late String ubsCep;
-  late String ubsHorario;
-  late double ubsDistance;
+  late String ubsName = ubs[this.widget.index].name;
+  late String ubsCep = ubs[this.widget.index].cep;
+  late String ubsHorario = ubs[this.widget.index].espediente;
+  late double ubsDistance = ubs[this.widget.index].distance;
 
   bool loadDistancias = false;
 
@@ -86,7 +85,11 @@ class _IAState extends State<IA> {
 
   void _onMapCreated(GoogleMapController controller) async {
     _mapController.complete(controller);
-    if (LatLng(ubs[0].localization[0], ubs[0].localization[1]) != null) {
+    ubsLocation = LatLng(ubs[this.widget.index].localization[0],
+        ubs[this.widget.index].localization[1]);
+    if (LatLng(ubs[this.widget.index].localization[0],
+            ubs[this.widget.index].localization[1]) !=
+        null) {
       MarkerId markerId = MarkerId(_markerIdVal());
       Position positionUser = await Geolocator.getCurrentPosition();
 
@@ -94,7 +97,8 @@ class _IAState extends State<IA> {
 
       Marker marker = Marker(
         markerId: markerId,
-        position: ubsLocation,
+        position: LatLng(ubs[this.widget.index].localization[0],
+            ubs[this.widget.index].localization[1]),
         draggable: false,
       );
       Marker markerUser = Marker(
@@ -129,7 +133,7 @@ class _IAState extends State<IA> {
     polylinePoints = PolylinePoints();
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'YOUR_API_KEY',
+      'AIzaSyCNOqsF-nHHiNarmRb4OdTIuCuYq4kY7Cc',
       PointLatLng(origem.latitude, origem.longitude),
       PointLatLng(dest.latitude, dest.longitude),
       travelMode: TravelMode.transit,
@@ -213,130 +217,22 @@ class _IAState extends State<IA> {
     });
   }
 
-  _newRated() {
-    for (var i = 0; i < 3; i++) {
-      rated.add(ubs[0]);
-    }
-    //vendo dos mais proximos quais tem mais doses
-    rated.sort((a, b) => a.qtdOfDose.compareTo(b.qtdOfDose));
-    //removendo o que tem menos
-    rated.removeAt(2);
-    // vendo dos que tem mais doses qual o mais proximo
-    rated.sort((a, b) => a.distance.compareTo(b.distance));
-    setState(() {
-      ubsLocation = LatLng(rated[0].localization[0], rated[0].localization[1]);
-      ubsName = rated[0].name;
-      ubsCep = rated[0].cep;
-      ubsHorario = rated[0].espediente;
-      ubsDistance = rated[0].distance;
-    });
-  }
-
-  /*_chooseBest() {
-    if (ubs[0].qtdOfDose >= ubs[1].qtdOfDose) {
-      if (ubs[0].qtdOfDose >= ubs[2].qtdOfDose) {
-        setState(() {
-          ubsLocation = LatLng(ubs[0].localization[0], ubs[0].localization[1]);
-          ubsName = ubs[0].name;
-          ubsCep = ubs[0].cep;
-          ubsHorario = ubs[0].espediente;
-          ubsDistance = ubs[0].distance;
-        });
-      } else {
-        setState(() {
-          ubsLocation = LatLng(ubs[2].localization[0], ubs[2].localization[1]);
-          ubsName = ubs[2].name;
-          ubsCep = ubs[2].cep;
-          ubsHorario = ubs[2].espediente;
-          ubsDistance = ubs[2].distance;
-        });
-      }
-    } else if (ubs[1].qtdOfDose >= ubs[0].qtdOfDose) {
-      if (ubs[1].qtdOfDose >= ubs[2].qtdOfDose) {
-        setState(() {
-          ubsLocation = LatLng(ubs[1].localization[0], ubs[1].localization[1]);
-          ubsName = ubs[1].name;
-          ubsCep = ubs[1].cep;
-          ubsHorario = ubs[1].espediente;
-          ubsDistance = ubs[1].distance;
-        });
-      } else {
-        setState(() {
-          ubsLocation = LatLng(ubs[2].localization[0], ubs[2].localization[1]);
-          ubsName = ubs[2].name;
-          ubsCep = ubs[2].cep;
-          ubsHorario = ubs[2].espediente;
-          ubsDistance = ubs[2].distance;
-        });
-      }
-    } else if (ubs[2].qtdOfDose >= ubs[0].qtdOfDose) {
-      if (ubs[2].qtdOfDose >= ubs[1].qtdOfDose) {
-        setState(() {
-          ubsLocation = LatLng(ubs[2].localization[0], ubs[2].localization[1]);
-          ubsName = ubs[2].name;
-          ubsCep = ubs[2].cep;
-          ubsHorario = ubs[2].espediente;
-          ubsDistance = ubs[2].distance;
-        });
-      } else {
-        setState(() {
-          ubsLocation = LatLng(ubs[1].localization[0], ubs[1].localization[1]);
-          ubsName = ubs[1].name;
-          ubsCep = ubs[1].cep;
-          ubsHorario = ubs[1].espediente;
-          ubsDistance = ubs[1].distance;
-        });
-      }
-    } else if (ubs[2].qtdOfDose >= ubs[1].qtdOfDose) {
-      if (ubs[2].qtdOfDose >= ubs[0].qtdOfDose) {
-        setState(() {
-          ubsLocation = LatLng(ubs[2].localization[0], ubs[2].localization[1]);
-          ubsName = ubs[2].name;
-          ubsCep = ubs[2].cep;
-          ubsHorario = ubs[2].espediente;
-          ubsDistance = ubs[2].distance;
-        });
-      } else {
-        setState(() {
-          ubsLocation = LatLng(ubs[0].localization[0], ubs[0].localization[1]);
-          ubsName = ubs[0].name;
-          ubsCep = ubs[0].cep;
-          ubsHorario = ubs[0].espediente;
-          ubsDistance = ubs[0].distance;
-        });
-      }
-    }
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green[200],
       appBar: AppBar(
         backgroundColor: Colors.green[200],
-        leading: Row(
-          children: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyHomePage()),
-                    (route) => false);
-              },
-              icon: Icon(Icons.arrow_back_ios_new),
-              color: Colors.white,
-              iconSize: 30.0,
-            ),
-            SizedBox(
-              width: 20,
-            ),
-            Text('  Recomendador',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                )),
-          ],
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => MyHomePage()),
+                (route) => false);
+          },
+          icon: Icon(Icons.arrow_back_ios_new),
+          color: Colors.white,
+          iconSize: 30.0,
         ),
       ),
       body: Center(
@@ -368,7 +264,7 @@ class _IAState extends State<IA> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Recomendamos a " + ubsName,
+                        ubsName,
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -431,30 +327,6 @@ class _IAState extends State<IA> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.red),
                             ),
-                      Container(
-                        height: 35,
-                        width: 50,
-                        child: GestureDetector(
-                          onTap: () async {
-                            await showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return PopUpList();
-                                });
-                          },
-                          child: Card(
-                            color: Colors.green[800],
-                            elevation: 3,
-                            child: Center(
-                              child: Icon(
-                                Icons.map_rounded,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
