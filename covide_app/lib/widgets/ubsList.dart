@@ -38,9 +38,17 @@ class _PopUpListState extends State<PopUpList> {
                   elevation: 3,
                   color: Colors.green[100],
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         ubs[index].name,
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        ubs[index].distance.toStringAsFixed(2) + "km",
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
                     ],

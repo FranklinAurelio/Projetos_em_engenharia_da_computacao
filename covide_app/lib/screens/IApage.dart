@@ -18,7 +18,7 @@ import 'package:http/http.dart' as http;
 
 import 'dart:convert';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'dart:math' show cos, sqrt, asin;
+import 'dart:math' show acos, asin, cos, sin, sqrt;
 
 class IA extends StatefulWidget {
   @override
@@ -55,6 +55,9 @@ class _IAState extends State<IA> {
   late String ubsCep;
   late String ubsHorario;
   late double ubsDistance;
+
+  bool carSelect = false;
+  bool walkSelect = true;
 
   bool loadDistancias = false;
 
@@ -214,30 +217,35 @@ class _IAState extends State<IA> {
   }
 
   _distanceCar(Position origem, LatLng dest) async {
-    setState(() {
-      totalDistance = 0.0;
-    });
+    //totalDistance = 0.0;
+    double distancia = 0.0;
     var lat1 = origem.latitude;
     var lon1 = origem.longitude;
     var lat2 = dest.latitude;
     var lon2 = dest.longitude;
-    double _coordinateDistance(lat1, lon1, lat2, lon2) {
-      var p = 0.017453292519943295;
-      var c = cos;
-      var a = 0.5 -
-          c((lat2 - lat1) * p) / 2 +
-          c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-      return 12742 * asin(sqrt(a));
-    }
 
-    for (int i = 0; i < polylineCoordinates.length - 1; i++) {
-      totalDistance += _coordinateDistance(
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    distancia = 12742 * asin(sqrt(a)) + 1.93;
+
+    //distancia = (6371 *
+    //acos(cos(lat1) * cos(lat2) * cos(lon2 - lon1) + sin(lat1) * sin(lat2)));
+
+    /*for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+      distancia += _coordinateDistance(
         polylineCoordinates[i].latitude,
         polylineCoordinates[i].longitude,
         polylineCoordinates[i + 1].latitude,
         polylineCoordinates[i + 1].longitude,
       );
-    }
+    }*/
+    setState(() {
+      //totalDistance = (distancia / 10) / 1.55;
+      totalDistance = distancia;
+    });
   }
 
   _newRated() {
@@ -502,21 +510,26 @@ class _IAState extends State<IA> {
                                   await _distanceCar(positionUser, position);
                                   setState(() {
                                     ubs[i].distance = totalDistance;
+                                    carSelect = true;
+                                    walkSelect = false;
                                   });
                                 }
                                 setState(() {
                                   ubs.sort((a, b) =>
                                       a.distance.compareTo(b.distance));
                                   _newRated();
+                                  mapView();
                                 });
                               },
                               child: Card(
-                                color: Colors.teal[800],
+                                color:
+                                    carSelect ? Colors.cyan : Colors.teal[800],
                                 elevation: 3,
                                 child: Center(
                                   child: Icon(
                                     Icons.commute_rounded,
-                                    color: Colors.white,
+                                    color:
+                                        carSelect ? Colors.black : Colors.white,
                                     size: 30,
                                   ),
                                 ),
@@ -540,22 +553,27 @@ class _IAState extends State<IA> {
                                   await _distance(positionUser, position);
                                   setState(() {
                                     ubs[i].distance = totalDistance;
+                                    walkSelect = true;
+                                    carSelect = false;
                                   });
                                 }
                                 setState(() {
                                   ubs.sort((a, b) =>
                                       a.distance.compareTo(b.distance));
                                   _newRated();
+                                  mapView();
                                 });
                               },
                               child: Card(
-                                color: Colors.teal[800],
+                                color:
+                                    walkSelect ? Colors.cyan : Colors.teal[800],
                                 elevation: 3,
                                 child: Center(
                                   child: Icon(
                                     Icons.directions_walk_rounded,
-                                    color: Colors.white,
-                                    size: 30,
+                                    color: walkSelect
+                                        ? Colors.black
+                                        : Colors.white,
                                   ),
                                 ),
                               ),
